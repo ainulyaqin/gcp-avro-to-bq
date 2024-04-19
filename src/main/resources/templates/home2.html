@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu with Content Change and Dynamic Tables</title>
+<style>
+.table_component {
+    overflow: auto;
+    width: 100%;
+}
+
+.table_component table {
+    border: 1px solid #dededf;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 1px;
+    text-align: left;
+}
+
+.table_component caption {
+    caption-side: top;
+    text-align: left;
+}
+
+.table_component th {
+    border: 1px solid #dededf;
+    background-color: #eceff1;
+    color: #000000;
+    padding: 5px;
+}
+
+.table_component td {
+    border: 1px solid #dededf;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 5px;
+}
+</style>
+
+</head>
+
+
+
+<body>
+
+<a href="#" onclick="showContent('current')">Current Process</a> <!--  | <a href="#" onclick="showContent('history')">History</a>  -->
+<div class="table_component" role="region" tabindex="0">
+<div class="content" id="content-area"></div>
+</div>
+  <script>
+  
+  var intervalId = setInterval(function() {
+	  showContent('current');
+	}, 5000);
+   
+  
+  function showContent(page) {
+    const contentArea = document.getElementById('content-area');
+    contentArea.innerHTML = ""; // Clear previous content
+
+    const baseUrl = "http://localhost:8080/api/v1/"; // Replace with your actual API base URL
+
+    if (page === 'current') {
+      fetch(baseUrl + 'current')
+        .then(response => response.json())
+        .then(data => {
+          contentArea.innerHTML = createProductTable(data);
+        })
+        .catch(error => {
+          contentArea.innerHTML = "<p>Error fetching products: " + error + "</p>";
+        });
+    } else if (page === 'history') {
+      fetch(baseUrl + 'history')
+        .then(response => response.json())
+        .then(data => {
+          contentArea.innerHTML = createServiceTable(data);
+        })
+        .catch(error => {
+          contentArea.innerHTML = "<p>Error fetching services: " + error + "</p>";
+        });
+    } else {
+      contentArea.innerHTML = "<p>Content not found!</p>";
+    }
+  }
+
+  function createProductTable(data) {
+    let tableHtml = `<table>
+        <thead>
+          <tr>
+            <th>File Name</th>
+            <th>Job Name</th>
+            <th>Status</th>
+            <th>Process Date</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    for (const current of data) {
+      tableHtml += `<tr>
+        <td>${current.filename}</td>
+        <td>${current.threadName}</td>
+        <td>${current.status}</td>
+        <td>${current.processDate}</td>
+      </tr>`;
+    }
+
+    tableHtml += `</tbody></table>`;
+    return tableHtml;
+  }
+
+  function createServiceTable(data) {
+    // Modify this function to match your service data structure
+    let tableHtml = `<table>
+        <thead>
+          <tr>
+            <th>Service Name</th>
+            <th>Description</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    for (const service of data) {
+      tableHtml += `<tr>
+        <td>${service.name}</td>
+        <td>${service.description}</td>
+        <td>${service.price}</td>
+      </tr>`;
+    }
+
+    tableHtml += `</tbody></table>`;
+    return tableHtml;
+  }
+  </script>
+
+</body>
+</html>

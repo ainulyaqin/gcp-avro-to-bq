@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu with Content Change and Dynamic Tables</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+<link
+	href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css"
+	rel="stylesheet" type="text/css" />
+</head>
+
+
+
+<body>
+
+	<p>Current Process</p>
+	<!--  | <a href="#" onclick="showContent('history')">History</a>  -->
+
+	<table id="example" class="display" style="width: 100%">
+		<thead>
+			<tr>
+				<th>File Name</th>
+				<th>Job Name</th>
+				<th>Status</th>
+				<th>Process Date</th>
+			</tr>
+		</thead>
+	</table>
+
+	<script>
+		table = new DataTable('#example', {
+			ordering : false,
+			searching : false,
+			paging:   false,
+			ajax : 'http://localhost:8080/api/v2/current',
+			columns : [ {
+				data : 'filename'
+			}, {
+				data : 'threadName'
+			}, {
+				data : 'status'
+			}, {
+				data : 'processDate'
+			} ]
+		});
+		
+		setInterval( function () {
+		    table.ajax.reload( null, false ); // user paging is not reset on reload
+		}, 10000 );
+	</script>
+
+</body>
+</html>
